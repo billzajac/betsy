@@ -61,15 +61,19 @@ module Betsy
         else
           objects = []
           response["results"].each do |data|
-            objects.append(new(data))
+            objects.append(new(data, response["count"]))
           end
           objects
         end
       end
     end
 
-    def initialize(data = nil)
+    # This is an ugly hack to pass response_count into each object, but I'm not sure
+    # how else to do it without a massive rewrite
+    attr_reader :result_count
+    def initialize(data = nil, result_count = nil)
       @result = data
+      @result_count = result_count
     end
 
     def self.included(other)
