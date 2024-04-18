@@ -45,11 +45,14 @@ Set your Callback URLs to
 * http://localhost:3000/etsy_response_listener
 * https://YOUR_PRODUCTION_DOMAIN/etsy_response_listener
 
-After running the generator and migrating, open config/initializers/betsy.rb and set your API key and redirect url to the correct values.
-It is currently configured to ENV. I like the gem dotenv. Then I only have to edit .env to look like this.
+After running the generator, migrating, and configuring your app with Etsy, Your API key and Callback URL values are referred to in: config/initializers/betsy.rb
+It is currently configured to look for the following ENV variables. **Be sure** your ETSY_CALLBACK_URL_BASE matches your Callback URL exactly (minus /etsy_response_listener)
+I like the gem dotenv. Then I only have to edit .env to look like this:
 
     ETSY_API_KEY=YOUR_PRIVATE_API_KEY
-    ETSY_REDIRECT_URL=http://localhost:3000 # for local dev -- set accordingly for your prod env
+    ETSY_CALLBACK_URL_BASE=http://localhost:3000 # do not add /etsy_response_listener
+
+Be sure to configure your production environment to use https://YOUR_PRODUCTION_DOMAIN/ for ETSY_CALLBACK_URL_BASE
 
 Now Betsy should be configured for use. 
 
