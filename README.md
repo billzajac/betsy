@@ -27,7 +27,7 @@ Running the generator will create an `etsy_account` model in your app as well as
 
 Finally, you need to run the migration: 
 
-    $ rails db:migrate
+    rails db:migrate
 
 ## Usage
 
