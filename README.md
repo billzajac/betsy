@@ -17,11 +17,11 @@ gem 'betsy'
 
 And then run:
 
-    $ bundle install
+    bundle install
 
 Next, you need to run the generator:
 
-    $ rails generate betsy:install
+    rails generate betsy:install
 
 Running the generator will create an `etsy_account` model in your app as well as a migration for this model. The purpose of this model is to allow you to easily link and store an Etsy account. This model is used within the gem by providing the `access_token` and `refresh_token` needed with making calls that require authentication. You can add anything to this model as long as the original fields are left as-is. This may be useful if you wish your application to have relations with an Etsy account.
 
@@ -31,11 +31,31 @@ Finally, you need to run the migration:
 
 ## Usage
 
+First setup an Etsy developer account and create an app. 
+Note, the process of getting an approveed app may take days and possible multiple attempts for clarity.
+
+* https://www.etsy.com/developers/register
+
+Or edit an existing app
+
+* https://www.etsy.com/developers/your-apps
+
+Set your Callback URLs to
+
+* http://localhost:3000/etsy_response_listener
+* https://YOUR_PRODUCTION_DOMAIN/etsy_response_listener
+
 After running the generator and migrating, open config/initializers/betsy.rb and set your API key and redirect url to the correct values.
+It is currently configured to ENV. I like the gem dotenv. Then I only have to edit .env to look like this.
+
+    ETSY_API_KEY=YOUR_PRIVATE_API_KEY
+    ETSY_REDIRECT_URL=http://localhost:3000 # for local dev -- set accordingly for your prod env
 
 Now Betsy should be configured for use. 
 
 ### Getting Authenticated
+
+You should only have to do this once per database for your app.
 To begin going through the authentication process you will first start by using Betsy to generate an authorization URL:
 
 ```ruby
@@ -65,6 +85,33 @@ Betsy::UserAddress.get_user_addresses(etsy_account: EtsyAccount.first)
 ### Refreshing Access Tokens
 
 By default, Betsy handles the refreshing of authentication tokens for you.
+
+## Example Usage
+
+```ruby
+# Find a shop and its ID
+shops = Betsy::Shop.find_shops('some totally unique shop name')
+shop = shops.first
+platform_shop_id = shop.shop_id
+
+# All of the things
+puts shop.inspect
+
+# Get some listings
+listings_per_batch = 20
+listings_offset = 0
+listings = Betsy::ShopListing.find_all_active_listings_by_shop(platform_shop_id, { limit: listings_per_batch, offset: listings_offset })
+listing = listings.first
+platform_listing_id = listing.listing_id
+
+# Get some images
+images = Betsy::ShopListingImage.get_listing_images(platform_shop_id, platform_listing_id)
+
+# Get some reviews
+reviews_per_batch = 20
+reviews_offset = 0
+betsy_reviews = Betsy::Review.get_reviews_by_listing(listing.platform_listing_id, { limit: reviews_per_batch, offset: reviews_offset })
+```
 
 ## License
 
